@@ -16,4 +16,5 @@ document.getElementById('rom').addEventListener('change', (e) => {
 function resetEmulator(newRom) {
     var rom = decodeRomObject(newRom);
     console.log(rom);
+    resetMemoryState(rom);
 }

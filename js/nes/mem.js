@@ -2,16 +2,25 @@
 // Memory Variables & Initialization
 // --------------------------------------------------------------------
 
+// Import mappers
+let mappernames = {
+    0x00: 'nrom'
+};
+let mappers = [];
+for(let id of Object.keys(mappernames))
+    include('nes/mapper/' + mappernames[id] + ".js");
+
 // Memory-related variables
 var ram = null;                     // 2KB internal RAM
 var cartRead, cartWrite = null;     // Write function pointers for cartridge space I/O operations, defined by mappers
 
 // Reset memory state on emulator restart
-function resetMemoryState() {
+function resetMemoryState(rom) {
     // RAM Array
     ram = new Array(0x800).fill(0);
 
-    // TODO: Mapper detection & cartridge space function mapping
+    // Mapper detection & cartridge space function mapping
+    mappers[rom.header.mapper].init(rom);
 }
 
 // --------------------------------------------------------------------
