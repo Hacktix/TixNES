@@ -35,4 +35,3 @@ class NROM {
 }
 
 mappers[0] = NROM;
-console.log(mappers);

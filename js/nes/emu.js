@@ -1,6 +1,7 @@
 // Include required modules
 include('nes/mem.js');
 include('nes/rom.js');
+include('nes/cpu.js');
 
 // ROM Select Listener
 document.getElementById('rom').addEventListener('change', (e) => {
@@ -15,6 +16,8 @@ document.getElementById('rom').addEventListener('change', (e) => {
 
 function resetEmulator(newRom) {
     var rom = decodeRomObject(newRom);
-    console.log(rom);
     resetMemoryState(rom);
+    resetCPU();
+
+    startCPU();
 }
