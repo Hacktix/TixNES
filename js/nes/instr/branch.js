@@ -129,3 +129,69 @@ function _bne(cycle) {
 }
 
 funcmap[0xD0] = _bne;
+
+// ----------------------------------------------------------------------
+// BVS
+// ----------------------------------------------------------------------
+function _bvs(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _read8_immediate.bind(this, _bvs.bind(this, 1));
+            break;
+        case 1:
+            if(registers.flag_v)
+                nextfunc = _bvs.bind(this, 2);
+            else {
+                tmp.pop();
+                nextfunc = fetchInstruction;
+            }
+            break;
+        case 2:
+            let offset = e8(tmp.pop());
+            let npc = (registers.pc + offset) & 0xFFFF;
+            if((npc & 0xFF00) !== (npc & 0xFF00))
+                nextfunc = _bvs.bind(this, 3);
+            else
+                nextfunc = fetchInstruction;
+            registers.pc = npc;
+            break;
+        case 3:
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x70] = _bvs;
+
+// ----------------------------------------------------------------------
+// BVC
+// ----------------------------------------------------------------------
+function _bvc(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _read8_immediate.bind(this, _bvc.bind(this, 1));
+            break;
+        case 1:
+            if(!registers.flag_v)
+                nextfunc = _bvc.bind(this, 2);
+            else {
+                tmp.pop();
+                nextfunc = fetchInstruction;
+            }
+            break;
+        case 2:
+            let offset = e8(tmp.pop());
+            let npc = (registers.pc + offset) & 0xFFFF;
+            if((npc & 0xFF00) !== (npc & 0xFF00))
+                nextfunc = _bvc.bind(this, 3);
+            else
+                nextfunc = fetchInstruction;
+            registers.pc = npc;
+            break;
+        case 3:
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x50] = _bvc;
