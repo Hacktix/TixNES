@@ -1,3 +1,7 @@
+// ----------------------------------------------------------------------
+// Reading Functions
+// ----------------------------------------------------------------------
+
 // (8 bit) Immediate Addressing - No Delay
 function _read8_immediate(callback) {
     tmp.push(readByte(registers.pc++));
@@ -63,6 +67,26 @@ function _read8_zpage_y(callback, cycle) {
             break;
         case 2:
             tmp.push(readByte(tmp.pop()));
+            callback();
+            break;
+    }
+}
+
+
+
+// ----------------------------------------------------------------------
+// Writing Functions
+// ----------------------------------------------------------------------
+
+// (8-bit) Zero Page Addressing - 1 Cycle Delay
+function _write8_zpage(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _write8_zpage.bind(this, callback, 1);
+            break;
+        case 1:
+            writeByte(tmp.pop(), tmp.pop());
             callback();
             break;
     }
