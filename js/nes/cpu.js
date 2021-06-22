@@ -1,6 +1,5 @@
 // Constant Value Definition
 const BLOCK_SIZE = 1789773;
-const DBG_PRINT_CYCLE_CNT = true;
 
 // Include Instruction Set
 include('nes/instr/instrs.js');
@@ -58,16 +57,14 @@ function resetCPU() {
 function fetchInstruction() {
     let opcode = readByte(registers.pc++);
     if(funcmap[opcode] === undefined)
-        throw `Encountered unknown opcode $${opcode.toString(16).padStart(2, '0')} at $${(registers.pc-1).toString(16).padStart(4, '0')}`;
+        throw `Encountered unknown opcode $${opcode.toString(16).padStart(2, '0')} at $${(registers.pc-1).toString(16).padStart(4, '0')} (Cycle ${cycle})`;
     funcmap[opcode]();
 }
 
 // CPU Operation Functions
 function step() {
-    if(DBG_PRINT_CYCLE_CNT)
-        console.log("Cycle " + cycle);
-    cycle++;
     nextfunc();
+    cycle++;
 }
 
 function stepInstr() {
