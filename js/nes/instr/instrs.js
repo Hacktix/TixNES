@@ -18,5 +18,17 @@ function _nop(cycle) {
             break;
     }
 }
-
 funcmap[0xEA] = _nop;
+
+function _sec(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _sec.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_c = true;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+funcmap[0x38] = _sec;
