@@ -52,3 +52,20 @@ function _stx(storefunc, cycle) {
 }
 
 funcmap[0x86] = _stx.bind(this, _write8_zpage);
+
+// ----------------------------------------------------------------------
+// STA
+// ----------------------------------------------------------------------
+function _sta(storefunc, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(registers.a);
+            nextfunc = storefunc.bind(this, _sta.bind(this, null, 1));
+            break;
+        case 1:
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x85] = _sta.bind(this, _write8_zpage);
