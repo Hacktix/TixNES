@@ -47,3 +47,29 @@ function _clc(cycle) {
     }
 }
 funcmap[0x18] = _clc;
+
+function _sei(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _sei.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_i = true;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+funcmap[0x78] = _sei;
+
+function _sed(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _sed.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_d = true;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+funcmap[0xF8] = _sed;
