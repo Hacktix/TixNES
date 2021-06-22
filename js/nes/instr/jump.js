@@ -27,14 +27,17 @@ function _jsr(cycle) {
             nextfunc = _jsr.bind(this, 2);
             break;
         case 2:
-            writeByte(0x100 + (registers.s--), ((registers.pc-1) & 0xFF00) >> 8);
             nextfunc = _jsr.bind(this, 3);
             break;
         case 3:
-            writeByte(0x100 + (registers.s--), (registers.pc-1) & 0xFF);
-            nextfunc = _read8_immediate.bind(this, _jsr.bind(this, 4));
+            writeByte(0x100 + (registers.s--), ((registers.pc-1) & 0xFF00) >> 8);
+            nextfunc = _jsr.bind(this, 4);
             break;
         case 4:
+            writeByte(0x100 + (registers.s--), (registers.pc-1) & 0xFF);
+            nextfunc = _read8_immediate.bind(this, _jsr.bind(this, 5));
+            break;
+        case 5:
             registers.pc = (tmp.pop() << 8) | tmp.pop();
             nextfunc = fetchInstruction;
             break;
