@@ -1,7 +1,10 @@
-function _jmp_abs(cycle) {
+// ----------------------------------------------------------------------
+// JMP
+// ----------------------------------------------------------------------
+function _jmp(loadfunc, cycle) {
     switch(cycle) {
         default:
-            nextfunc = _read16_immediate.bind(this, _jmp_abs.bind(this, 1));
+            nextfunc = loadfunc.bind(this, _jmp.bind(this, null, 1));
             break;
         case 1:
             registers.pc = tmp.pop();
@@ -9,4 +12,5 @@ function _jmp_abs(cycle) {
             break;
     }
 }
-funcmap[0x4C] = _jmp_abs;
+
+funcmap[0x4C] = _jmp.bind(this, _read16_immediate);
