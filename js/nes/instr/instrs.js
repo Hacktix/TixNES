@@ -1,4 +1,5 @@
 // Include instruction files
+include('nes/instr/memaccess.js');
 include('nes/instr/jump.js');
 
 // Variable Declarations
