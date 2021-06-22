@@ -45,3 +45,35 @@ function _jsr(cycle) {
 }
 
 funcmap[0x20] = _jsr;
+
+// ----------------------------------------------------------------------
+// RTS
+// ----------------------------------------------------------------------
+function _rts(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _rts.bind(this, 1);
+            break;
+        case 1:
+            nextfunc = _rts.bind(this, 2);
+            break;
+        case 2:
+            registers.s++;
+            nextfunc = _rts.bind(this, 3);
+            break;
+        case 3:
+            tmp.push(readByte(0x100 + registers.s++));
+            nextfunc = _rts.bind(this, 4);
+            break;
+        case 4:
+            tmp.push(readByte(0x100 + registers.s))
+            nextfunc = _rts.bind(this, 5);
+            break;
+        case 5:
+            registers.pc = ((tmp.pop() << 8) | tmp.pop()) + 2;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x60] = _rts;
