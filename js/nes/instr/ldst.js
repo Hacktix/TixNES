@@ -8,6 +8,8 @@ function _ldx(loadfunc, cycle) {
             break;
         case 1:
             registers.x = tmp.pop();
+            registers.flag_z = registers.x === 0;
+            registers.flag_n = registers.x > 127;
             nextfunc = fetchInstruction;
             break;
     }
