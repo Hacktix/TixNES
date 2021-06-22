@@ -33,3 +33,16 @@ function _sec(cycle) {
     }
 }
 funcmap[0x38] = _sec;
+
+function _clc(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _clc.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_c = false;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+funcmap[0x18] = _clc;
