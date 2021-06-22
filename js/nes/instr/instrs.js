@@ -1,7 +1,7 @@
 // Include instruction files
 include('nes/instr/memaccess.js');
 include('nes/instr/jump.js');
-include('nes/instr/load.js');
+include('nes/instr/ldst.js');
 
 // Variable Declarations
 var funcmap = { };   // Maps opcodes to function callbacks
