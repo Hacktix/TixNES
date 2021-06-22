@@ -1,5 +1,6 @@
 // Constant Value Definition
 const BLOCK_SIZE = 1789773;
+const DBG_PRINT_CYCLE_CNT = true;
 
 // Include Instruction Set
 include('nes/instr/instrs.js');
@@ -7,6 +8,7 @@ include('nes/instr/instrs.js');
 // Variable Definitions
 var registers = null;
 var nextfunc = null;
+var cycle = null;
 
 // Reset Function
 function resetCPU() {
@@ -33,6 +35,7 @@ function resetCPU() {
         set pc(v) { this._pc = v & 0xFFFF; },
     }
     nextfunc = fetchInstruction;
+    cycle = 7;
 }
 
 // Callback function for fetching & decoding the next instruction
@@ -45,6 +48,9 @@ function fetchInstruction() {
 
 // CPU Operation Functions
 function step() {
+    if(DBG_PRINT_CYCLE_CNT)
+        console.log("Cycle " + cycle);
+    cycle++;
     nextfunc();
 }
 
