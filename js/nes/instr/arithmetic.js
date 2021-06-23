@@ -135,3 +135,41 @@ function _iny(cycle) {
 }
 
 funcmap[0xC8] = _iny;
+
+// ----------------------------------------------------------------------
+// DEX
+// ----------------------------------------------------------------------
+function _dex(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _dex.bind(this, 1);
+            break;
+        case 1:
+            registers.x--;
+            registers.flag_z = registers.x === 0;
+            registers.flag_n = registers.x > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xCA] = _dex;
+
+// ----------------------------------------------------------------------
+// DEY
+// ----------------------------------------------------------------------
+function _dey(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _dey.bind(this, 1);
+            break;
+        case 1:
+            registers.y--;
+            registers.flag_z = registers.y === 0;
+            registers.flag_n = registers.y > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x88] = _dey;
