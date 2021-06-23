@@ -115,3 +115,49 @@ function _asl_acc(cycle) {
 }
 
 funcmap[0x0A] = _asl_acc;
+
+// ----------------------------------------------------------------------
+// ROR
+// ----------------------------------------------------------------------
+function _ror_acc(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _ror_acc.bind(this, 1);
+            break;
+        case 1:
+            let c = (registers.a & 1) !== 0;
+            registers.a >>= 1;
+            if(registers.flag_c)
+                registers.a |= 0x80;
+            registers.flag_c = c;
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x6A] = _ror_acc;
+
+// ----------------------------------------------------------------------
+// ROL
+// ----------------------------------------------------------------------
+function _rol_acc(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _rol_acc.bind(this, 1);
+            break;
+        case 1:
+            let c = (registers.a & 0x80) !== 0;
+            registers.a <<= 1;
+            if(registers.flag_c)
+                registers.a |= 1;
+            registers.flag_c = c;
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x2A] = _rol_acc;
