@@ -179,3 +179,33 @@ function _write8_indexed_indirect_x(callback, cycle) {
             break;
     }
 }
+
+
+
+// ----------------------------------------------------------------------
+// Modify Functions
+// ----------------------------------------------------------------------
+
+// (8-bit) Zero Page Addressing - 2 Cycle Delay - 1 Cycle Operation - 1 Cycle Delay
+function _mod8_zpage(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _mod8_zpage.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push(readByte(tmp[0]));
+            nextfunc = _mod8_zpage.bind(this, callback, 2);
+            break;
+        case 2:
+            writeByte(tmp[0], tmp[1]);
+            callback();
+            nextfunc = _mod8_zpage.bind(this, callback, 3);
+            break;
+        case 3:
+            let v = tmp.pop();
+            writeByte(tmp.pop(), v);
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
