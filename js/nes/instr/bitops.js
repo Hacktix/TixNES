@@ -75,3 +75,23 @@ function _eor(loadfunc, cycle) {
 }
 
 funcmap[0x49] = _eor.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
+// LSR
+// ----------------------------------------------------------------------
+function _lsr_acc(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _lsr_acc.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_c = (registers.a & 1) !== 0;
+            registers.a >>= 1;
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x4A] = _lsr_acc;
