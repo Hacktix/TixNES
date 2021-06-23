@@ -19,6 +19,26 @@ function _cmp(loadfunc, cycle) {
 funcmap[0xC9] = _cmp.bind(this, _read8_immediate);
 
 // ----------------------------------------------------------------------
+// CPX
+// ----------------------------------------------------------------------
+function _cpx(loadfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = loadfunc.bind(this, _cpx.bind(this, null, 1));
+            break;
+        case 1:
+            let v = tmp.pop();
+            registers.flag_c = registers.x >= 0;
+            registers.flag_z = registers.x === v;
+            registers.flag_n = registers.x < v;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xE0] = _cpx.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
 // CPY
 // ----------------------------------------------------------------------
 function _cpy(loadfunc, cycle) {
