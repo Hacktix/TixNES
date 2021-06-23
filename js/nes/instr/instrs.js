@@ -4,6 +4,7 @@ include('nes/instr/jump.js');
 include('nes/instr/branch.js');
 include('nes/instr/ldst.js');
 include('nes/instr/bitops.js');
+include('nes/instr/stack.js');
 
 // Variable Declarations
 var funcmap = { };   // Maps opcodes to function callbacks
