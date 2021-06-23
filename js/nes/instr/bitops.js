@@ -56,3 +56,22 @@ function _or(loadfunc, cycle) {
 }
 
 funcmap[0x09] = _or.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
+// EOR
+// ----------------------------------------------------------------------
+function _eor(loadfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = loadfunc.bind(this, _eor.bind(this, null, 1));
+            break;
+        case 1:
+            registers.a ^= tmp.pop();
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x49] = _eor.bind(this, _read8_immediate);
