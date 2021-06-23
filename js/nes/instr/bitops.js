@@ -95,3 +95,23 @@ function _lsr_acc(cycle) {
 }
 
 funcmap[0x4A] = _lsr_acc;
+
+// ----------------------------------------------------------------------
+// ASL
+// ----------------------------------------------------------------------
+function _asl_acc(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _asl_acc.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_c = (registers.a & 0x80) !== 0;
+            registers.a <<= 1;
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x0A] = _asl_acc;
