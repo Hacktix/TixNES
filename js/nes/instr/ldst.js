@@ -57,6 +57,7 @@ function _lda(loadfunc, cycle) {
 funcmap[0xA9] = _lda.bind(this, _read8_immediate);
 funcmap[0xAD] = _lda.bind(this, _read8_absolute);
 funcmap[0xA5] = _lda.bind(this, _read8_zpage);
+funcmap[0xA1] = _lda.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // STX
