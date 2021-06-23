@@ -50,6 +50,19 @@ function _clc(cycle) {
 }
 funcmap[0x18] = _clc;
 
+function _cld(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _cld.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_d = false;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+funcmap[0xD8] = _cld;
+
 function _sei(cycle) {
     switch(cycle) {
         default:
