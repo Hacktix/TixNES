@@ -181,3 +181,43 @@ function _dey(cycle) {
 }
 
 funcmap[0x88] = _dey;
+
+// ----------------------------------------------------------------------
+// INC
+// ----------------------------------------------------------------------
+
+function _inc(modfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = modfunc.bind(this, _inc.bind(this, null, 1));
+            break;
+        case 1:
+            let v = (tmp.pop() + 1) & 0xFF;
+            registers.flag_z = v === 0;
+            registers.flag_n = v > 127;
+            tmp.push(v);
+            break;
+    }
+}
+
+funcmap[0xE6] = _inc.bind(this, _mod8_zpage);
+
+// ----------------------------------------------------------------------
+// DEC
+// ----------------------------------------------------------------------
+
+function _dec(modfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = modfunc.bind(this, _dec.bind(this, null, 1));
+            break;
+        case 1:
+            let v = (tmp.pop() - 1) & 0xFF;
+            registers.flag_z = v === 0;
+            registers.flag_n = v > 127;
+            tmp.push(v);
+            break;
+    }
+}
+
+funcmap[0xC6] = _dec.bind(this, _mod8_zpage);
