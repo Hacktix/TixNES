@@ -8,15 +8,16 @@ function _cmp(loadfunc, cycle) {
             break;
         case 1:
             let v = tmp.pop();
-            registers.flag_c = registers.a >= 0;
+            registers.flag_c = registers.a >= v;
             registers.flag_z = registers.a === v;
-            registers.flag_n = registers.a < v;
+            registers.flag_n = ((registers.a - v) & 0xFF) > 127;
             nextfunc = fetchInstruction;
             break;
     }
 }
 
 funcmap[0xC9] = _cmp.bind(this, _read8_immediate);
+funcmap[0xC1] = _cmp.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // CPX
@@ -28,9 +29,9 @@ function _cpx(loadfunc, cycle) {
             break;
         case 1:
             let v = tmp.pop();
-            registers.flag_c = registers.x >= 0;
+            registers.flag_c = registers.x >= v;
             registers.flag_z = registers.x === v;
-            registers.flag_n = registers.x < v;
+            registers.flag_n = ((registers.x - v) & 0xFF) > 127;
             nextfunc = fetchInstruction;
             break;
     }
@@ -48,9 +49,9 @@ function _cpy(loadfunc, cycle) {
             break;
         case 1:
             let v = tmp.pop();
-            registers.flag_c = registers.y >= 0;
+            registers.flag_c = registers.y >= v;
             registers.flag_z = registers.y === v;
-            registers.flag_n = registers.y < v;
+            registers.flag_n = ((registers.y - v) & 0xFF) > 127;
             nextfunc = fetchInstruction;
             break;
     }
@@ -80,6 +81,7 @@ function _adc(loadfunc, cycle) {
 }
 
 funcmap[0x69] = _adc.bind(this, _read8_immediate);
+funcmap[0x61] = _adc.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // SBC
@@ -97,6 +99,7 @@ function _sbc(loadfunc, cycle) {
 }
 
 funcmap[0xE9] = _sbc.bind(this, _read8_immediate);
+funcmap[0xE1] = _sbc.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // INX
