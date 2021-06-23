@@ -30,11 +30,11 @@ function _jsr(cycle) {
             nextfunc = _jsr.bind(this, 3);
             break;
         case 3:
-            writeByte(0x100 + (registers.s--), ((registers.pc-1) & 0xFF00) >> 8);
+            writeByte(0x100 + (registers.s--), (registers.pc & 0xFF00) >> 8);
             nextfunc = _jsr.bind(this, 4);
             break;
         case 4:
-            writeByte(0x100 + (registers.s--), (registers.pc-1) & 0xFF);
+            writeByte(0x100 + (registers.s--), registers.pc & 0xFF);
             nextfunc = _read8_immediate.bind(this, _jsr.bind(this, 5));
             break;
         case 5:
@@ -70,7 +70,7 @@ function _rts(cycle) {
             nextfunc = _rts.bind(this, 5);
             break;
         case 5:
-            registers.pc = ((tmp.pop() << 8) | tmp.pop()) + 2;
+            registers.pc = ((tmp.pop() << 8) | tmp.pop()) + 1;
             nextfunc = fetchInstruction;
             break;
     }
