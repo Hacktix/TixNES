@@ -220,4 +220,24 @@ function _rol_acc(cycle) {
     }
 }
 
+function _rol(modfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = modfunc.bind(this, _rol.bind(this, null, 1));
+            break;
+        case 1:
+            let v = tmp.pop();
+            let c = (v & 0x80) !== 0;
+            v = (v << 1) & 0xFF;
+            if(registers.flag_c)
+                v |= 1;
+            registers.flag_c = c;
+            registers.flag_z = v === 0;
+            registers.flag_n = v > 127;
+            tmp.push(v);
+            break;
+    }
+}
+
 funcmap[0x2A] = _rol_acc;
+funcmap[0x26] = _rol.bind(this, _mod8_zpage);
