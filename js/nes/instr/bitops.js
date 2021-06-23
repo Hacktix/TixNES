@@ -100,7 +100,24 @@ function _lsr_acc(cycle) {
     }
 }
 
+function _lsr(modfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = modfunc.bind(this, _lsr.bind(this, null, 1));
+            break;
+        case 1:
+            let v = tmp.pop();
+            registers.flag_c = (v & 1) !== 0;
+            v >>= 1;
+            registers.flag_z = v === 0;
+            registers.flag_n = v > 127;
+            tmp.push(v);
+            break;
+    }
+}
+
 funcmap[0x4A] = _lsr_acc;
+funcmap[0x46] = _lsr.bind(this, _mod8_zpage);
 
 // ----------------------------------------------------------------------
 // ASL
