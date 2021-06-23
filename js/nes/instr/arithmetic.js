@@ -97,3 +97,41 @@ function _sbc(loadfunc, cycle) {
 }
 
 funcmap[0xE9] = _sbc.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
+// INX
+// ----------------------------------------------------------------------
+function _inx(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _inx.bind(this, 1);
+            break;
+        case 1:
+            registers.x++;
+            registers.flag_z = registers.x === 0;
+            registers.flag_n = registers.x > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xE8] = _inx;
+
+// ----------------------------------------------------------------------
+// INY
+// ----------------------------------------------------------------------
+function _iny(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _iny.bind(this, 1);
+            break;
+        case 1:
+            registers.y++;
+            registers.flag_z = registers.y === 0;
+            registers.flag_n = registers.y > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xC8] = _iny;
