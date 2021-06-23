@@ -1,5 +1,6 @@
 // Constant Value Definition
 const BLOCK_SIZE = 1789773;
+const DBG_BREAK = -1;
 
 // Include Instruction Set
 include('nes/instr/instrs.js');
@@ -65,6 +66,9 @@ function fetchInstruction() {
 function step() {
     nextfunc();
     cycle++;
+
+    if(nextfunc === fetchInstruction && registers.pc === DBG_BREAK)
+        throw "Breakpoint hit!";
 }
 
 function stepInstr() {
