@@ -164,3 +164,22 @@ function _tya(cycle) {
 }
 
 funcmap[0x98] = _tya;
+
+// ----------------------------------------------------------------------
+// TSX
+// ----------------------------------------------------------------------
+function _tsx(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _tsx.bind(this, 1);
+            break;
+        case 1:
+            registers.x = registers.s;
+            registers.flag_z = registers.x === 0;
+            registers.flag_n = registers.x > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xBA] = _tsx;
