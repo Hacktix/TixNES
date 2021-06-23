@@ -177,7 +177,27 @@ function _ror_acc(cycle) {
     }
 }
 
+function _ror(modfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = modfunc.bind(this, _ror.bind(this, null, 1));
+            break;
+        case 1:
+            let v = tmp.pop();
+            let c = (v & 1) !== 0;
+            v >>= 1;
+            if(registers.flag_c)
+                v |= 0x80;
+            registers.flag_c = c;
+            registers.flag_z = v === 0;
+            registers.flag_n = v > 127;
+            tmp.push(v);
+            break;
+    }
+}
+
 funcmap[0x6A] = _ror_acc;
+funcmap[0x66] = _ror.bind(this, _mod8_zpage);
 
 // ----------------------------------------------------------------------
 // ROL
