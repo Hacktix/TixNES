@@ -18,6 +18,25 @@ function _ldx(loadfunc, cycle) {
 funcmap[0xA2] = _ldx.bind(this, _read8_immediate);
 
 // ----------------------------------------------------------------------
+// LDY
+// ----------------------------------------------------------------------
+function _ldy(loadfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = loadfunc.bind(this, _ldy.bind(this, null, 1));
+            break;
+        case 1:
+            registers.y = tmp.pop();
+            registers.flag_z = registers.y === 0;
+            registers.flag_n = registers.y > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xA0] = _ldy.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
 // LDA
 // ----------------------------------------------------------------------
 function _lda(loadfunc, cycle) {
