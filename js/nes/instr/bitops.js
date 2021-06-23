@@ -137,7 +137,24 @@ function _asl_acc(cycle) {
     }
 }
 
+function _asl(modfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = modfunc.bind(this, _asl.bind(this, null, 1));
+            break;
+        case 1:
+            let v = tmp.pop();
+            registers.flag_c = (v & 0x80) !== 0;
+            v = (v << 1) & 0xFF;
+            registers.flag_z = v === 0;
+            registers.flag_n = v > 127;
+            tmp.push(v);
+            break;
+    }
+}
+
 funcmap[0x0A] = _asl_acc;
+funcmap[0x06] = _asl.bind(this, _mod8_zpage);
 
 // ----------------------------------------------------------------------
 // ROR
