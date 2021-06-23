@@ -80,3 +80,20 @@ function _adc(loadfunc, cycle) {
 }
 
 funcmap[0x69] = _adc.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
+// SBC
+// ----------------------------------------------------------------------
+function _sbc(loadfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = loadfunc.bind(this, _sbc.bind(this, null, 1));
+            break;
+        case 1:
+            tmp.push(~tmp.pop() & 0xFF);
+            _adc(null, 1);
+            break;
+    }
+}
+
+funcmap[0xE9] = _sbc.bind(this, _read8_immediate);
