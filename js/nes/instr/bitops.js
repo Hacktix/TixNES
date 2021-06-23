@@ -18,6 +18,7 @@ function _bit(loadfunc, cycle) {
 }
 
 funcmap[0x24] = _bit.bind(this, _read8_zpage);
+funcmap[0x2C] = _bit.bind(this, _read8_absolute);
 
 // ----------------------------------------------------------------------
 // AND
@@ -38,6 +39,7 @@ function _and(loadfunc, cycle) {
 
 funcmap[0x29] = _and.bind(this, _read8_immediate);
 funcmap[0x25] = _and.bind(this, _read8_zpage);
+funcmap[0x2D] = _and.bind(this, _read8_absolute);
 funcmap[0x21] = _and.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
@@ -59,6 +61,7 @@ function _ora(loadfunc, cycle) {
 
 funcmap[0x09] = _ora.bind(this, _read8_immediate);
 funcmap[0x05] = _ora.bind(this, _read8_zpage);
+funcmap[0x0D] = _ora.bind(this, _read8_absolute);
 funcmap[0x01] = _ora.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
@@ -80,6 +83,7 @@ function _eor(loadfunc, cycle) {
 
 funcmap[0x49] = _eor.bind(this, _read8_immediate);
 funcmap[0x45] = _eor.bind(this, _read8_zpage);
+funcmap[0x4D] = _eor.bind(this, _read8_absolute);
 funcmap[0x41] = _eor.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
