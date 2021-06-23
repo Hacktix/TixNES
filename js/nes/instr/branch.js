@@ -197,6 +197,39 @@ function _bvc(cycle) {
 funcmap[0x50] = _bvc;
 
 // ----------------------------------------------------------------------
+// BMI
+// ----------------------------------------------------------------------
+function _bmi(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _read8_immediate.bind(this, _bmi.bind(this, 1));
+            break;
+        case 1:
+            if(registers.flag_n)
+                nextfunc = _bmi.bind(this, 2);
+            else {
+                tmp.pop();
+                nextfunc = fetchInstruction;
+            }
+            break;
+        case 2:
+            let offset = e8(tmp.pop());
+            let npc = (registers.pc + offset) & 0xFFFF;
+            if((npc & 0xFF00) !== (npc & 0xFF00))
+                nextfunc = _bmi.bind(this, 3);
+            else
+                nextfunc = fetchInstruction;
+            registers.pc = npc;
+            break;
+        case 3:
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x30] = _bmi;
+
+// ----------------------------------------------------------------------
 // BPL
 // ----------------------------------------------------------------------
 function _bpl(cycle) {
