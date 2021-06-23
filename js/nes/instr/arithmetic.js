@@ -17,6 +17,7 @@ function _cmp(loadfunc, cycle) {
 }
 
 funcmap[0xC9] = _cmp.bind(this, _read8_immediate);
+funcmap[0xC5] = _cmp.bind(this, _read8_zpage);
 funcmap[0xC1] = _cmp.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
@@ -38,6 +39,7 @@ function _cpx(loadfunc, cycle) {
 }
 
 funcmap[0xE0] = _cpx.bind(this, _read8_immediate);
+funcmap[0xE4] = _cpx.bind(this, _read8_zpage);
 
 // ----------------------------------------------------------------------
 // CPY
@@ -58,6 +60,7 @@ function _cpy(loadfunc, cycle) {
 }
 
 funcmap[0xC0] = _cpy.bind(this, _read8_immediate);
+funcmap[0xC4] = _cpy.bind(this, _read8_zpage);
 
 // ----------------------------------------------------------------------
 // ADC
@@ -81,6 +84,7 @@ function _adc(loadfunc, cycle) {
 }
 
 funcmap[0x69] = _adc.bind(this, _read8_immediate);
+funcmap[0x65] = _adc.bind(this, _read8_zpage);
 funcmap[0x61] = _adc.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
@@ -99,6 +103,7 @@ function _sbc(loadfunc, cycle) {
 }
 
 funcmap[0xE9] = _sbc.bind(this, _read8_immediate);
+funcmap[0xE5] = _sbc.bind(this, _read8_zpage);
 funcmap[0xE1] = _sbc.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
