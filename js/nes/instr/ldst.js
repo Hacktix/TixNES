@@ -71,6 +71,7 @@ function _stx(storefunc, cycle) {
 }
 
 funcmap[0x86] = _stx.bind(this, _write8_zpage);
+funcmap[0x8E] = _stx.bind(this, _write8_absolute);
 
 // ----------------------------------------------------------------------
 // STA

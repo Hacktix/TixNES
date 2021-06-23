@@ -91,3 +91,21 @@ function _write8_zpage(callback, cycle) {
             break;
     }
 }
+
+// (8-bit) Absolute Addressing - 2 Cycle Delay
+function _write8_absolute(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _write8_absolute.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((readByte(registers.pc++) << 8) + tmp.pop());
+            nextfunc = _write8_absolute.bind(this, callback, 2);
+            break;
+        case 2:
+            writeByte(tmp.pop(), tmp.pop());
+            callback();
+            break;
+    }
+}
