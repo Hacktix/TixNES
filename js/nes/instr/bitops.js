@@ -37,3 +37,22 @@ function _and(loadfunc, cycle) {
 }
 
 funcmap[0x29] = _and.bind(this, _read8_immediate);
+
+// ----------------------------------------------------------------------
+// ORA
+// ----------------------------------------------------------------------
+function _or(loadfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = loadfunc.bind(this, _or.bind(this, null, 1));
+            break;
+        case 1:
+            registers.a |= tmp.pop();
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x09] = _or.bind(this, _read8_immediate);
