@@ -36,6 +36,7 @@ function _ldy(loadfunc, cycle) {
 }
 
 funcmap[0xA0] = _ldy.bind(this, _read8_immediate);
+funcmap[0xA4] = _ldy.bind(this, _read8_zpage);
 
 // ----------------------------------------------------------------------
 // LDA
@@ -76,6 +77,23 @@ function _stx(storefunc, cycle) {
 
 funcmap[0x86] = _stx.bind(this, _write8_zpage);
 funcmap[0x8E] = _stx.bind(this, _write8_absolute);
+
+// ----------------------------------------------------------------------
+// STY
+// ----------------------------------------------------------------------
+function _sty(storefunc, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(registers.y);
+            nextfunc = storefunc.bind(this, _sty.bind(this, null, 1));
+            break;
+        case 1:
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x84] = _sty.bind(this, _write8_zpage);
 
 // ----------------------------------------------------------------------
 // STA
