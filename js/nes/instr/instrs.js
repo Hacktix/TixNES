@@ -88,3 +88,16 @@ function _sed(cycle) {
     }
 }
 funcmap[0xF8] = _sed;
+
+function _clv(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _clv.bind(this, 1);
+            break;
+        case 1:
+            registers.flag_v = false;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+funcmap[0xB8] = _clv;
