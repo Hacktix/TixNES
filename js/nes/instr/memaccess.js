@@ -110,8 +110,7 @@ function _read8_indexed_indirect_x(callback, cycle) {
             nextfunc = _read8_indexed_indirect_x.bind(this, callback, 4);
             break;
         case 4:
-            let addr = tmp.pop();
-            tmp.push(readByte(addr));
+            tmp.push(readByte(tmp.pop()));
             callback();
             break;
     }
@@ -149,6 +148,32 @@ function _write8_absolute(callback, cycle) {
             nextfunc = _write8_absolute.bind(this, callback, 2);
             break;
         case 2:
+            writeByte(tmp.pop(), tmp.pop());
+            callback();
+            break;
+    }
+}
+
+// (8-bit) Indexed Indirect Addressing with X-Offset - 4 Cycle Delay
+function _write8_indexed_indirect_x(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _write8_indexed_indirect_x.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push(tmp.pop() + registers.x);
+            nextfunc = _write8_indexed_indirect_x.bind(this, callback, 2);
+            break;
+        case 2:
+            tmp.push(readByte(tmp[1] & 0xFF));
+            nextfunc = _write8_indexed_indirect_x.bind(this, callback, 3);
+            break;
+        case 3:
+            tmp.push(tmp.pop() + (readByte((tmp.pop() + 1) & 0xFF) << 8));
+            nextfunc = _write8_indexed_indirect_x.bind(this, callback, 4);
+            break;
+        case 4:
             writeByte(tmp.pop(), tmp.pop());
             callback();
             break;
