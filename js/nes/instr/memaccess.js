@@ -22,6 +22,24 @@ function _read16_immediate(callback, cycle) {
     }
 }
 
+// (8 bit) Absolute Addressing - 2 Cycle Delay
+function _read8_absolute(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _read8_absolute.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((readByte(registers.pc++) << 8) | tmp.pop());
+            nextfunc = _read8_absolute.bind(this, callback, 2);
+            break;
+        case 2:
+            tmp.push(readByte(tmp.pop()));
+            callback();
+            break;
+    }
+}
+
 // (8 bit) Zero Page Addressing - 1 Cycle Delay
 function _read8_zpage(callback, cycle) {
     switch(cycle) {

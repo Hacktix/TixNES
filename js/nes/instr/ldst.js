@@ -16,6 +16,7 @@ function _ldx(loadfunc, cycle) {
 }
 
 funcmap[0xA2] = _ldx.bind(this, _read8_immediate);
+funcmap[0xAE] = _ldx.bind(this, _read8_absolute);
 
 // ----------------------------------------------------------------------
 // LDY
