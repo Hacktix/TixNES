@@ -77,3 +77,35 @@ function _rts(cycle) {
 }
 
 funcmap[0x60] = _rts;
+
+// ----------------------------------------------------------------------
+// RTI
+// ----------------------------------------------------------------------
+function _rti(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _rti.bind(this, 1);
+            break;
+        case 1:
+            nextfunc = _rti.bind(this, 2);
+            break;
+        case 2:
+            registers.s++;
+            nextfunc = _rti.bind(this, 3);
+            break;
+        case 3:
+            registers.p = readByte(0x100 + registers.s++);
+            nextfunc = _rti.bind(this, 4);
+            break;
+        case 4:
+            tmp.push(readByte(0x100 + registers.s++));
+            nextfunc = _rti.bind(this, 5);
+            break;
+        case 5:
+            registers.pc = ((readByte(0x100 + registers.s) << 8) | tmp.pop());
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x40] = _rti;
