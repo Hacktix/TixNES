@@ -18,3 +18,22 @@ function _bit(loadfunc, cycle) {
 }
 
 funcmap[0x24] = _bit.bind(this, _read8_zpage);
+
+// ----------------------------------------------------------------------
+// AND
+// ----------------------------------------------------------------------
+function _and(loadfunc, cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = loadfunc.bind(this, _and.bind(this, null, 1));
+            break;
+        case 1:
+            registers.a &= tmp.pop();
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x29] = _and.bind(this, _read8_immediate);
