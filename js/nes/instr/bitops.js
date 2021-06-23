@@ -41,10 +41,10 @@ funcmap[0x29] = _and.bind(this, _read8_immediate);
 // ----------------------------------------------------------------------
 // ORA
 // ----------------------------------------------------------------------
-function _or(loadfunc, cycle) {
+function _ora(loadfunc, cycle) {
     switch(cycle) {
         default:
-            nextfunc = loadfunc.bind(this, _or.bind(this, null, 1));
+            nextfunc = loadfunc.bind(this, _ora.bind(this, null, 1));
             break;
         case 1:
             registers.a |= tmp.pop();
@@ -55,7 +55,7 @@ function _or(loadfunc, cycle) {
     }
 }
 
-funcmap[0x09] = _or.bind(this, _read8_immediate);
+funcmap[0x09] = _ora.bind(this, _read8_immediate);
 
 // ----------------------------------------------------------------------
 // EOR
