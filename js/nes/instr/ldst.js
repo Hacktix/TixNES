@@ -88,3 +88,41 @@ function _sta(storefunc, cycle) {
 }
 
 funcmap[0x85] = _sta.bind(this, _write8_zpage);
+
+// ----------------------------------------------------------------------
+// TAX
+// ----------------------------------------------------------------------
+function _tax(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _tax.bind(this, 1);
+            break;
+        case 1:
+            registers.x = registers.a;
+            registers.flag_z = registers.x === 0;
+            registers.flag_n = registers.x > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xAA] = _tax;
+
+// ----------------------------------------------------------------------
+// TAY
+// ----------------------------------------------------------------------
+function _tay(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _tay.bind(this, 1);
+            break;
+        case 1:
+            registers.y = registers.a;
+            registers.flag_z = registers.y === 0;
+            registers.flag_n = registers.y > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0xA8] = _tay;
