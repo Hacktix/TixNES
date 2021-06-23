@@ -126,3 +126,41 @@ function _tay(cycle) {
 }
 
 funcmap[0xA8] = _tay;
+
+// ----------------------------------------------------------------------
+// TXA
+// ----------------------------------------------------------------------
+function _txa(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _txa.bind(this, 1);
+            break;
+        case 1:
+            registers.a = registers.x;
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x8A] = _txa;
+
+// ----------------------------------------------------------------------
+// TYA
+// ----------------------------------------------------------------------
+function _tya(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _tya.bind(this, 1);
+            break;
+        case 1:
+            registers.a = registers.y;
+            registers.flag_z = registers.a === 0;
+            registers.flag_n = registers.a > 127;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x98] = _tya;
