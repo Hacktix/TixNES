@@ -56,6 +56,7 @@ function _lda(loadfunc, cycle) {
 
 funcmap[0xA9] = _lda.bind(this, _read8_immediate);
 funcmap[0xAD] = _lda.bind(this, _read8_absolute);
+funcmap[0xA5] = _lda.bind(this, _read8_zpage);
 
 // ----------------------------------------------------------------------
 // STX
@@ -91,6 +92,7 @@ function _sta(storefunc, cycle) {
 }
 
 funcmap[0x85] = _sta.bind(this, _write8_zpage);
+funcmap[0x8D] = _sta.bind(this, _write8_absolute);
 
 // ----------------------------------------------------------------------
 // TAX
