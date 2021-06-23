@@ -37,6 +37,7 @@ function _and(loadfunc, cycle) {
 }
 
 funcmap[0x29] = _and.bind(this, _read8_immediate);
+funcmap[0x21] = _and.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // ORA
@@ -56,6 +57,7 @@ function _ora(loadfunc, cycle) {
 }
 
 funcmap[0x09] = _ora.bind(this, _read8_immediate);
+funcmap[0x01] = _ora.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // EOR
@@ -75,6 +77,7 @@ function _eor(loadfunc, cycle) {
 }
 
 funcmap[0x49] = _eor.bind(this, _read8_immediate);
+funcmap[0x41] = _eor.bind(this, _read8_indexed_indirect_x);
 
 // ----------------------------------------------------------------------
 // LSR
