@@ -184,3 +184,20 @@ function _tsx(cycle) {
 }
 
 funcmap[0xBA] = _tsx;
+
+// ----------------------------------------------------------------------
+// TXS
+// ----------------------------------------------------------------------
+function _txs(cycle) {
+    switch(cycle) {
+        default:
+            nextfunc = _txs.bind(this, 1);
+            break;
+        case 1:
+            registers.s = registers.x;
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
+
+funcmap[0x9A] = _txs;
