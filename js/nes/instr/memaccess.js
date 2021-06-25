@@ -209,3 +209,31 @@ function _mod8_zpage(callback, cycle) {
             break;
     }
 }
+
+// (8-bit) Absolute Addressing - 3 Cycle Delay - 1 Cycle Operation - 1 Cycle Delay
+function _mod8_absolute(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _mod8_absolute.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((readByte(registers.pc++) << 8) + tmp.pop());
+            nextfunc = _mod8_absolute.bind(this, callback, 2);
+            break;
+        case 2:
+            tmp.push(readByte(tmp[0]));
+            nextfunc = _mod8_absolute.bind(this, callback, 3);
+            break;
+        case 3:
+            writeByte(tmp[0], tmp[1]);
+            callback();
+            nextfunc = _mod8_absolute.bind(this, callback, 4);
+            break;
+        case 4:
+            let v = tmp.pop();
+            writeByte(tmp.pop(), v);
+            nextfunc = fetchInstruction;
+            break;
+    }
+}
