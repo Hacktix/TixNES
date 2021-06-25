@@ -22,6 +22,28 @@ function _read16_immediate(callback, cycle) {
     }
 }
 
+// (16 bit) Indirect Addressing - 3 Cycle Delay
+function _read16_indirect(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _read16_indirect.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((readByte(registers.pc++) << 8) | tmp.pop());
+            nextfunc = _read16_indirect.bind(this, callback, 2);
+            break;
+        case 2:
+            tmp.push(readByte(tmp[0]));
+            nextfunc = _read16_indirect.bind(this, callback, 3);
+            break;
+        case 3:
+            tmp.push((readByte((tmp[0] & 0xFF00) + ((tmp.shift() + 1) & 0xFF)) << 8) | tmp.pop());
+            callback();
+            break;
+    }
+}
+
 // (8 bit) Absolute Addressing - 2 Cycle Delay
 function _read8_absolute(callback, cycle) {
     switch(cycle) {

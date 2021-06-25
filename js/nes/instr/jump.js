@@ -14,6 +14,7 @@ function _jmp(loadfunc, cycle) {
 }
 
 funcmap[0x4C] = _jmp.bind(this, _read16_immediate);
+funcmap[0x6C] = _jmp.bind(this, _read16_indirect);
 
 // ----------------------------------------------------------------------
 // JSR
