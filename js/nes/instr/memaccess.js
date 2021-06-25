@@ -166,6 +166,54 @@ function _read8_indirect_indexed_y(callback, cycle) {
     }
 }
 
+// (8 bit) Absolute Addressing with Y-Offset - 2/3 Cycle Delay
+function _read8_absolute_y(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _read8_absolute_y.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((readByte(registers.pc++) << 8) | tmp.pop());
+            nextfunc = _read8_absolute_y.bind(this, callback, 2);
+            break;
+        case 2:
+            if(((tmp[0] + registers.y) & 0xFF00) !== (tmp[0] & 0xFF00)) {
+                readByte((tmp[0] & 0xFF00) + ((tmp[0] + registers.y) & 0xFF));
+                nextfunc = _read8_absolute_y.bind(this, callback, 3);
+                break;
+            }
+        case 3:
+            tmp.push(readByte(tmp.pop() + registers.y));
+            callback();
+            break;
+    }
+}
+
+// (8 bit) Absolute Addressing with X-Offset - 2/3 Cycle Delay
+function _read8_absolute_x(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _read8_absolute_x.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((readByte(registers.pc++) << 8) | tmp.pop());
+            nextfunc = _read8_absolute_x.bind(this, callback, 2);
+            break;
+        case 2:
+            if(((tmp[0] + registers.x) & 0xFF00) !== (tmp[0] & 0xFF00)) {
+                readByte((tmp[0] & 0xFF00) + ((tmp[0] + registers.x) & 0xFF));
+                nextfunc = _read8_absolute_x.bind(this, callback, 3);
+                break;
+            }
+        case 3:
+            tmp.push(readByte(tmp.pop() + registers.x));
+            callback();
+            break;
+    }
+}
+
 
 
 // ----------------------------------------------------------------------
