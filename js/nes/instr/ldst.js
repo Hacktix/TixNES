@@ -38,6 +38,7 @@ function _ldy(loadfunc, cycle) {
 
 funcmap[0xA0] = _ldy.bind(this, _read8_immediate);
 funcmap[0xA4] = _ldy.bind(this, _read8_zpage);
+funcmap[0xB4] = _ldy.bind(this, _read8_zpage_x);
 funcmap[0xAC] = _ldy.bind(this, _read8_absolute);
 
 // ----------------------------------------------------------------------
@@ -98,6 +99,7 @@ function _sty(storefunc, cycle) {
 }
 
 funcmap[0x84] = _sty.bind(this, _write8_zpage);
+funcmap[0x94] = _sty.bind(this, _write8_zpage_x);
 funcmap[0x8C] = _sty.bind(this, _write8_absolute);
 
 // ----------------------------------------------------------------------

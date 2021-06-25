@@ -349,6 +349,42 @@ function _write8_absolute_x(callback, cycle) {
     }
 }
 
+// (8 bit) Zero Page Addressing with Y-Offset - 2 Cycle Delay
+function _write8_zpage_y(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _write8_zpage_y.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((tmp.pop() + registers.y) & 0xFF);
+            nextfunc = _write8_zpage_y.bind(this, callback, 2);
+            break;
+        case 2:
+            writeByte(tmp.pop(), tmp.pop());
+            callback();
+            break;
+    }
+}
+
+// (8 bit) Zero Page Addressing with X-Offset - 2 Cycle Delay
+function _write8_zpage_x(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _write8_zpage_x.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push((tmp.pop() + registers.x) & 0xFF);
+            nextfunc = _write8_zpage_x.bind(this, callback, 2);
+            break;
+        case 2:
+            writeByte(tmp.pop(), tmp.pop());
+            callback();
+            break;
+    }
+}
+
 
 
 // ----------------------------------------------------------------------
