@@ -20,6 +20,7 @@ funcmap[0xC9] = _cmp.bind(this, _read8_immediate);
 funcmap[0xC5] = _cmp.bind(this, _read8_zpage);
 funcmap[0xCD] = _cmp.bind(this, _read8_absolute);
 funcmap[0xC1] = _cmp.bind(this, _read8_indexed_indirect_x);
+funcmap[0xD1] = _cmp.bind(this, _read8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // CPX
@@ -90,6 +91,7 @@ funcmap[0x69] = _adc.bind(this, _read8_immediate);
 funcmap[0x65] = _adc.bind(this, _read8_zpage);
 funcmap[0x6D] = _adc.bind(this, _read8_absolute);
 funcmap[0x61] = _adc.bind(this, _read8_indexed_indirect_x);
+funcmap[0x71] = _adc.bind(this, _read8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // SBC
@@ -110,6 +112,7 @@ funcmap[0xE9] = _sbc.bind(this, _read8_immediate);
 funcmap[0xE5] = _sbc.bind(this, _read8_zpage);
 funcmap[0xED] = _sbc.bind(this, _read8_absolute);
 funcmap[0xE1] = _sbc.bind(this, _read8_indexed_indirect_x);
+funcmap[0xF1] = _sbc.bind(this, _read8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // INX
