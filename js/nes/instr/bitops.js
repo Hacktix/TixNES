@@ -41,6 +41,7 @@ funcmap[0x29] = _and.bind(this, _read8_immediate);
 funcmap[0x25] = _and.bind(this, _read8_zpage);
 funcmap[0x2D] = _and.bind(this, _read8_absolute);
 funcmap[0x21] = _and.bind(this, _read8_indexed_indirect_x);
+funcmap[0x31] = _and.bind(this, _read8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // ORA
@@ -63,6 +64,7 @@ funcmap[0x09] = _ora.bind(this, _read8_immediate);
 funcmap[0x05] = _ora.bind(this, _read8_zpage);
 funcmap[0x0D] = _ora.bind(this, _read8_absolute);
 funcmap[0x01] = _ora.bind(this, _read8_indexed_indirect_x);
+funcmap[0x11] = _ora.bind(this, _read8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // EOR
@@ -85,6 +87,7 @@ funcmap[0x49] = _eor.bind(this, _read8_immediate);
 funcmap[0x45] = _eor.bind(this, _read8_zpage);
 funcmap[0x4D] = _eor.bind(this, _read8_absolute);
 funcmap[0x41] = _eor.bind(this, _read8_indexed_indirect_x);
+funcmap[0x51] = _eor.bind(this, _read8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // LSR
