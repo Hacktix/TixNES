@@ -129,7 +129,6 @@ function _read8_indirect_indexed_y(callback, cycle) {
             break;
         case 2:
             tmp.push((readByte((tmp.shift() + 1) & 0xFF) << 8) + tmp.pop());
-            console.log(`Stored $${tmp[0].toString(16).padStart(4,0)}`)
             nextfunc = _read8_indirect_indexed_y.bind(this, callback, 3);
             break;
         case 3:
@@ -139,9 +138,7 @@ function _read8_indirect_indexed_y(callback, cycle) {
                 break;
             }
         case 4:
-            let addr = tmp.pop() + registers.y;
-            console.log(`Read from $${addr.toString(16).padStart(4,0)}`)
-            tmp.push(readByte(addr));
+            tmp.push(readByte(tmp.pop() + registers.y));
             callback();
             break;
     }
