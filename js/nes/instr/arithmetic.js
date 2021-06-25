@@ -18,6 +18,7 @@ function _cmp(loadfunc, cycle) {
 
 funcmap[0xC9] = _cmp.bind(this, _read8_immediate);
 funcmap[0xC5] = _cmp.bind(this, _read8_zpage);
+funcmap[0xD5] = _cmp.bind(this, _read8_zpage_x);
 funcmap[0xCD] = _cmp.bind(this, _read8_absolute);
 funcmap[0xD9] = _cmp.bind(this, _read8_absolute_y);
 funcmap[0xC1] = _cmp.bind(this, _read8_indexed_indirect_x);
@@ -90,6 +91,7 @@ function _adc(loadfunc, cycle) {
 
 funcmap[0x69] = _adc.bind(this, _read8_immediate);
 funcmap[0x65] = _adc.bind(this, _read8_zpage);
+funcmap[0x75] = _adc.bind(this, _read8_zpage_x);
 funcmap[0x6D] = _adc.bind(this, _read8_absolute);
 funcmap[0x79] = _adc.bind(this, _read8_absolute_y);
 funcmap[0x61] = _adc.bind(this, _read8_indexed_indirect_x);
@@ -112,6 +114,7 @@ function _sbc(loadfunc, cycle) {
 
 funcmap[0xE9] = _sbc.bind(this, _read8_immediate);
 funcmap[0xE5] = _sbc.bind(this, _read8_zpage);
+funcmap[0xF5] = _sbc.bind(this, _read8_zpage_x);
 funcmap[0xED] = _sbc.bind(this, _read8_absolute);
 funcmap[0xF9] = _sbc.bind(this, _read8_absolute_y);
 funcmap[0xE1] = _sbc.bind(this, _read8_indexed_indirect_x);
