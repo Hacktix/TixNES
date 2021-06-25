@@ -61,6 +61,7 @@ function _lda(loadfunc, cycle) {
 funcmap[0xA9] = _lda.bind(this, _read8_immediate);
 funcmap[0xAD] = _lda.bind(this, _read8_absolute);
 funcmap[0xA5] = _lda.bind(this, _read8_zpage);
+funcmap[0xB5] = _lda.bind(this, _read8_zpage_x);
 funcmap[0xB9] = _lda.bind(this, _read8_absolute_y);
 funcmap[0xA1] = _lda.bind(this, _read8_indexed_indirect_x);
 funcmap[0xB1] = _lda.bind(this, _read8_indirect_indexed_y);
@@ -118,6 +119,7 @@ function _sta(storefunc, cycle) {
 }
 
 funcmap[0x85] = _sta.bind(this, _write8_zpage);
+funcmap[0x95] = _sta.bind(this, _write8_zpage_x);
 funcmap[0x8D] = _sta.bind(this, _write8_absolute);
 funcmap[0x99] = _sta.bind(this, _write8_absolute_y);
 funcmap[0x81] = _sta.bind(this, _write8_indexed_indirect_x);
