@@ -117,6 +117,7 @@ function _sta(storefunc, cycle) {
 funcmap[0x85] = _sta.bind(this, _write8_zpage);
 funcmap[0x8D] = _sta.bind(this, _write8_absolute);
 funcmap[0x81] = _sta.bind(this, _write8_indexed_indirect_x);
+funcmap[0x91] = _sta.bind(this, _write8_indirect_indexed_y);
 
 // ----------------------------------------------------------------------
 // TAX

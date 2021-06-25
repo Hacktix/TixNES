@@ -208,6 +208,32 @@ function _write8_indexed_indirect_x(callback, cycle) {
     }
 }
 
+// (8-bit) Indirect Indexed Addressing with Y-Offset - 5 Cycle Delay
+function _write8_indirect_indexed_y(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _write8_indirect_indexed_y.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push(readByte(tmp[1]));
+            nextfunc = _write8_indirect_indexed_y.bind(this, callback, 2);
+            break;
+        case 2:
+            tmp.push(tmp.pop() + (readByte((tmp.pop() + 1) & 0xFF) << 8));
+            nextfunc = _write8_indirect_indexed_y.bind(this, callback, 3);
+            break;
+        case 3:
+            readByte((tmp[1] & 0xFF00) + ((tmp[1] + registers.y) & 0xFF))
+            nextfunc = _write8_indirect_indexed_y.bind(this, callback, 4);
+            break;
+        case 4:
+            writeByte(tmp.pop(), tmp.pop());
+            callback();
+            break;
+    }
+}
+
 
 
 // ----------------------------------------------------------------------
