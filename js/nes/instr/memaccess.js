@@ -116,6 +116,37 @@ function _read8_indexed_indirect_x(callback, cycle) {
     }
 }
 
+// (8 bit) Indirect Indexed Addressing with Y-Offset - 4/5 Cycle Delay
+function _read8_indirect_indexed_y(callback, cycle) {
+    switch(cycle) {
+        default:
+            tmp.push(readByte(registers.pc++));
+            nextfunc = _read8_indirect_indexed_y.bind(this, callback, 1);
+            break;
+        case 1:
+            tmp.push(readByte(tmp[0]));
+            nextfunc = _read8_indirect_indexed_y.bind(this, callback, 2);
+            break;
+        case 2:
+            tmp.push((readByte((tmp.shift() + 1) & 0xFF) << 8) + tmp.pop());
+            console.log(`Stored $${tmp[0].toString(16).padStart(4,0)}`)
+            nextfunc = _read8_indirect_indexed_y.bind(this, callback, 3);
+            break;
+        case 3:
+            if(((tmp[0] + registers.y) & 0xFF00) !== (tmp[0] & 0xFF00)) {
+                readByte((tmp[0] & 0xFF00) + ((tmp[0] + registers.y) & 0xFF))
+                nextfunc = _read8_indirect_indexed_y.bind(this, callback, 4);
+                break;
+            }
+        case 4:
+            let addr = tmp.pop() + registers.y;
+            console.log(`Read from $${addr.toString(16).padStart(4,0)}`)
+            tmp.push(readByte(addr));
+            callback();
+            break;
+    }
+}
+
 
 
 // ----------------------------------------------------------------------
