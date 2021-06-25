@@ -28,6 +28,8 @@ function resetMemoryState(rom) {
 // --------------------------------------------------------------------
 
 function readByte(addr) {
+    addr &= 0xFFFF;
+
     if(addr < 0x2000) // 2KB internal RAM  (+ Mirrors)
         return ram[addr & 0x7FF];
 
@@ -45,6 +47,9 @@ function readByte(addr) {
 }
 
 function writeByte(addr, val) {
+    addr &= 0xFFFF;
+    val &= 0xFF;
+    
     if(addr < 0x2000) { // 2KB internal RAM (+ Mirrors)
         ram[addr & 0x7FF] = val;
         return;
