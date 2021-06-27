@@ -220,6 +220,7 @@ function _inc(modfunc, cycle) {
 funcmap[0xE6] = _inc.bind(this, _mod8_zpage);
 funcmap[0xF6] = _inc.bind(this, _mod8_zpage_x);
 funcmap[0xEE] = _inc.bind(this, _mod8_absolute);
+funcmap[0xFE] = _inc.bind(this, _mod8_absolute_x);
 
 // ----------------------------------------------------------------------
 // DEC
@@ -242,3 +243,4 @@ function _dec(modfunc, cycle) {
 funcmap[0xC6] = _dec.bind(this, _mod8_zpage);
 funcmap[0xD6] = _dec.bind(this, _mod8_zpage_x);
 funcmap[0xCE] = _dec.bind(this, _mod8_absolute);
+funcmap[0xDE] = _dec.bind(this, _mod8_absolute_x);

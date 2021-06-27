@@ -136,6 +136,7 @@ funcmap[0x4A] = _lsr_acc;
 funcmap[0x46] = _lsr.bind(this, _mod8_zpage);
 funcmap[0x56] = _lsr.bind(this, _mod8_zpage_x);
 funcmap[0x4E] = _lsr.bind(this, _mod8_absolute);
+funcmap[0x5E] = _lsr.bind(this, _mod8_absolute_x);
 
 // ----------------------------------------------------------------------
 // ASL
@@ -175,6 +176,7 @@ funcmap[0x0A] = _asl_acc;
 funcmap[0x06] = _asl.bind(this, _mod8_zpage);
 funcmap[0x16] = _asl.bind(this, _mod8_zpage_x);
 funcmap[0x0E] = _asl.bind(this, _mod8_absolute);
+funcmap[0x1E] = _asl.bind(this, _mod8_absolute_x);
 
 // ----------------------------------------------------------------------
 // ROR
@@ -220,6 +222,7 @@ funcmap[0x6A] = _ror_acc;
 funcmap[0x66] = _ror.bind(this, _mod8_zpage);
 funcmap[0x76] = _ror.bind(this, _mod8_zpage_x);
 funcmap[0x6E] = _ror.bind(this, _mod8_absolute);
+funcmap[0x7E] = _ror.bind(this, _mod8_absolute_x);
 
 // ----------------------------------------------------------------------
 // ROL
@@ -265,3 +268,4 @@ funcmap[0x2A] = _rol_acc;
 funcmap[0x26] = _rol.bind(this, _mod8_zpage);
 funcmap[0x36] = _rol.bind(this, _mod8_zpage_x);
 funcmap[0x2E] = _rol.bind(this, _mod8_absolute);
+funcmap[0x3E] = _rol.bind(this, _mod8_absolute_x);
