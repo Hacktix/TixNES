@@ -19,6 +19,7 @@ funcmap[0xA2] = _ldx.bind(this, _read8_immediate);
 funcmap[0xA6] = _ldx.bind(this, _read8_zpage);
 funcmap[0xB6] = _ldx.bind(this, _read8_zpage_y);
 funcmap[0xAE] = _ldx.bind(this, _read8_absolute);
+funcmap[0xBE] = _ldx.bind(this, _read8_absolute_y);
 
 // ----------------------------------------------------------------------
 // LDY
