@@ -17,6 +17,7 @@ function _ldx(loadfunc, cycle) {
 
 funcmap[0xA2] = _ldx.bind(this, _read8_immediate);
 funcmap[0xA6] = _ldx.bind(this, _read8_zpage);
+funcmap[0xB6] = _ldx.bind(this, _read8_zpage_y);
 funcmap[0xAE] = _ldx.bind(this, _read8_absolute);
 
 // ----------------------------------------------------------------------
@@ -82,6 +83,7 @@ function _stx(storefunc, cycle) {
 }
 
 funcmap[0x86] = _stx.bind(this, _write8_zpage);
+funcmap[0x96] = _stx.bind(this, _write8_zpage_y);
 funcmap[0x8E] = _stx.bind(this, _write8_absolute);
 
 // ----------------------------------------------------------------------
