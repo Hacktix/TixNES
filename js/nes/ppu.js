@@ -83,6 +83,10 @@ function resetPPU() {
             ppuWrite(this._ppuaddr, v);
             this._ppuaddr += this._addr_inc;
         },
+
+        // NMI
+        nmiTrigger: false,
+        lastStateNMI: false,
     };
 
     nextfuncPPU = zeroCycle;
@@ -91,8 +95,13 @@ function resetPPU() {
 // PPU Operation Functions
 function tickPPU() {
     for(let i = 0; i < 3; i++) {
-        //console.log(nextfuncPPU.name);
         nextfuncPPU();
+
+        // Update NMI
+        let nmi = _ppu._en_nmi && ((_ppu._status & 0x80) !== 0);
+        if(!_ppu.lastStateNMI && nmi)
+            _ppu.nmiTrigger = true;
+        _ppu.lastStateNMI = nmi;
     }
 }
 
@@ -102,8 +111,9 @@ function zeroCycle() {
         return nextfuncPPU = renderCycle;
 
     // Post-render line + VBlank
-    if(_ppu.y === 241 && _ppu.lineCycle === 1)
+    if(_ppu.y === 241 && _ppu.lineCycle === 1) {
         _ppu.flag_v = 1;
+    }
     if(_ppu.lineCycle++ === 340) {
         _ppu.lineCycle = 0;
         if(++_ppu.y === 261) {

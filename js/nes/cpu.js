@@ -4,6 +4,7 @@ const DBG_BREAK = -1;
 
 // Include Instruction Set
 include('nes/instr/instrs.js');
+include('nes/interrupts.js');
 
 // Variable Definitions
 var registers = null;
@@ -56,6 +57,13 @@ function resetCPU() {
 
 // Callback function for fetching & decoding the next instruction
 function fetchInstruction() {
+
+    // Check Interrupts
+    if(_ppu.nmiTrigger) {
+        _ppu.nmiTrigger = false;
+        return _nmi_dispatch();
+    }
+
     let opcode = readByte(registers.pc++);
     if(funcmap[opcode] === undefined)
         throw `Encountered unknown opcode $${opcode.toString(16).padStart(2, '0')} at $${(registers.pc-1).toString(16).padStart(4, '0')} (Cycle ${cycle})`;
