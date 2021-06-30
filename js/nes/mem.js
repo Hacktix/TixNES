@@ -44,7 +44,11 @@ function readByte(addr) {
     }
 
     if(addr < 0x4018) // TODO: APU & I/O Registers
-        return 0;
+        switch(addr) {
+            case 0x4016: // JOYPAD1
+            case 0x4017: // JOYPAD2
+                return _input.joypad;
+        }
 
     if(addr < 0x4020) // TODO: Test Mode Registers
         return 0;
@@ -68,7 +72,11 @@ function writeByte(addr, val) {
     }
 
     if(addr < 0x4018) { // TODO: APU & I/O Registers
-        return;
+        switch(addr) {
+            case 0x4016: // JOYPAD1
+            case 0x4017: // JOYPAD2
+                return _input.joypad = val;
+        }
     }
 
     if(addr < 0x4020) { // TODO: Test Mode Registers

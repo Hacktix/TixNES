@@ -33,8 +33,13 @@ document.getElementById('rom').addEventListener('change', (e) => {
 function resetEmulator(newRom) {
     gamerom = decodeRomObject(newRom);
     resetMemoryState(gamerom);
+    resetInputState();
     resetCPU();
     resetPPU();
 
     startCPU();
 }
+
+// Input Listeners
+document.onkeydown = handleKeyDown;
+document.onkeyup = handleKeyUp;
