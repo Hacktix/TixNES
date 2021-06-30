@@ -16,6 +16,7 @@ const tmplcd = tmpcanvas.getContext('2d');
 // Initialize Canvas & ImageData
 const screen = document.getElementById('screen').getContext('2d', {alpha: false});
 screen.imageSmoothingEnabled = false;
+screen.scale(3, 3);
 screen.fillRect(0, 0, 256, 240);
 const screenData = screen.createImageData(256, 240);
 
