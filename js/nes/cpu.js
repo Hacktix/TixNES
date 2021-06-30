@@ -1,5 +1,5 @@
 // Constant Value Definition
-const BLOCK_SIZE = 1789773;
+const BLOCK_SIZE = 29781;
 const DBG_BREAK = -1;
 
 // Include Instruction Set
@@ -18,7 +18,7 @@ function resetCPU() {
         _y: 0,
         _p: 0x24,
         _s: 0xFD,
-        _pc: 0xC000,
+        _pc: readByte(0xFFFC) + (readByte(0xFFFD) << 8),
 
         get a() { return this._a; },
         get x() { return this._x; },
@@ -85,6 +85,7 @@ function execBlock() {
     } catch(e) {
         console.error(e);
     }
+    _renderNametable();
 }
 
 function startCPU() {

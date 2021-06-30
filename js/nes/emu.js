@@ -2,6 +2,22 @@
 include('nes/mem.js');
 include('nes/rom.js');
 include('nes/cpu.js');
+include('nes/ppu.js');
+
+// Global Variable Definition
+var gamerom = null;
+
+// Initialize offscreen canvas
+const tmpcanvas = document.createElement('canvas');
+tmpcanvas.width = 256;
+tmpcanvas.height = 240;
+const tmplcd = tmpcanvas.getContext('2d');
+
+// Initialize Canvas & ImageData
+const screen = document.getElementById('screen').getContext('2d', {alpha: false});
+screen.imageSmoothingEnabled = false;
+screen.fillRect(0, 0, 256, 240);
+const screenData = screen.createImageData(256, 240);
 
 // ROM Select Listener
 document.getElementById('rom').addEventListener('change', (e) => {
@@ -15,9 +31,10 @@ document.getElementById('rom').addEventListener('change', (e) => {
 });
 
 function resetEmulator(newRom) {
-    var rom = decodeRomObject(newRom);
-    resetMemoryState(rom);
+    gamerom = decodeRomObject(newRom);
+    resetMemoryState(gamerom);
     resetCPU();
+    resetPPU();
 
     startCPU();
 }

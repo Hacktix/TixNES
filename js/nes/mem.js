@@ -12,7 +12,8 @@ for(let id of Object.keys(mappernames))
 
 // Memory-related variables
 var ram = null;                     // 2KB internal RAM
-var cartRead, cartWrite = null;     // Write function pointers for cartridge space I/O operations, defined by mappers
+var cartRead, cartWrite = null;     // Function pointers for cartridge space I/O operations, defined by mappers
+var ppuRead, ppuWrite = null;       // Function pointers for PPU I/O operations, defined by mappers
 
 // Reset memory state on emulator restart
 function resetMemoryState(rom) {
@@ -27,14 +28,20 @@ function resetMemoryState(rom) {
 // Memory I/O Functions
 // --------------------------------------------------------------------
 
+// Lookup Tables for Hardware Register Names
+const ppureg = [ "ppuctrl", "ppumask", "ppustatus", "oamaddr", "oamdata", "ppuscroll", "ppuaddr", "ppudata" ];
+
 function readByte(addr) {
     addr &= 0xFFFF;
 
     if(addr < 0x2000) // 2KB internal RAM  (+ Mirrors)
         return ram[addr & 0x7FF];
 
-    if(addr < 0x4000) // TODO: PPU Registers
-        return 0;
+    if(addr < 0x4000) { // TODO: PPU Registers
+        let val = _ppu[ppureg[addr & 7]];
+        // console.log(`> Read $${val.toString(16).padStart(2,0)} from ${ppureg[addr & 7].toUpperCase()}`);
+        return val;
+    }
 
     if(addr < 0x4018) // TODO: APU & I/O Registers
         return 0;
@@ -56,7 +63,8 @@ function writeByte(addr, val) {
     }
 
     if(addr < 0x4000) { // TODO: PPU Registers
-        return;
+        // console.log(`> Wrote $${val.toString(16).padStart(2,0)} to ${ppureg[addr & 7].toUpperCase()}`);
+        _ppu[ppureg[addr & 7]] = val;
     }
 
     if(addr < 0x4018) { // TODO: APU & I/O Registers
@@ -69,4 +77,19 @@ function writeByte(addr, val) {
 
     // If none of the above - refer to cartridge space function
     cartWrite(addr, val);
+}
+
+// --------------------------------------------------------------------
+// PPU I/O Functions
+// --------------------------------------------------------------------
+function _ppuReadDefault(addr) {
+    if(addr < 0x3F00)
+        return ppuram[addr % 0x3000];
+    return paletteram[addr & 0x1F];
+}
+
+function _ppuWriteDefault(addr, val) {
+    if(addr < 0x3F00)
+        return ppuram[addr % 0x3000] = val;
+    return paletteram[addr & 0x1F] = val;
 }

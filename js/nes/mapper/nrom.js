@@ -7,6 +7,8 @@ class NROM {
 
         cartRead = NROM.read;
         cartWrite = NROM.write;
+        ppuRead = NROM.readPPU;
+        ppuWrite = NROM.writePPU;
     }
 
     static read(addr) {
@@ -30,6 +32,18 @@ class NROM {
                 NROM._prgram[addr % NROM._prgram.length] = val;
             return;
         }
+    }
+
+    static readPPU(addr) {
+        if(addr < 0x2000)
+            return NROM._chrrom[addr % NROM._chrrom.length];
+        return _ppuReadDefault(addr);
+    }
+
+    static writePPU(addr, val) {
+        if(addr < 0x2000)
+            return;
+        return _ppuWriteDefault(addr, val);
     }
 
 }
