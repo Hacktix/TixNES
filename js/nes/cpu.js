@@ -65,6 +65,7 @@ function fetchInstruction() {
 // CPU Operation Functions
 function step() {
     nextfunc();
+    tickPPU();
     cycle++;
 
     if(nextfunc === fetchInstruction && registers.pc === DBG_BREAK)
@@ -85,7 +86,7 @@ function execBlock() {
     } catch(e) {
         console.error(e);
     }
-    _renderNametable();
+    renderFrame();
 }
 
 function startCPU() {

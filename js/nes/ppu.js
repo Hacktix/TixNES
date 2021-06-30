@@ -4,6 +4,14 @@ var paletteram = null;
 var oam = null;
 
 var _ppu = null;
+var nextfuncPPU = null;
+
+const monoPalette = [
+    [0, 0, 0],
+    [100, 100, 100],
+    [200, 200, 200],
+    [255, 255, 255],
+]
 
 // Reset Function
 function resetPPU() {
@@ -12,6 +20,19 @@ function resetPPU() {
     oam = new Array(0x100).fill(0);
 
     _ppu = {
+
+        // Rendering Variables
+        x: 0,
+        y: -1,
+        fetchX: 0,
+        fetchY: 0,
+        nt: 0,
+        at: 0,
+        bgl: 0,
+        bgh: 0,
+        shift_pattern: [],
+        lineCycle: 0,
+        fetchState: 0,
 
         // PPUCTRL Register
         _nametable: 0x2000,
@@ -31,8 +52,19 @@ function resetPPU() {
             this._en_nmi = (v & 0b10000000) !== 0;
         },
 
-        // PPUSTATUS Register (Stub)
-        get ppustatus() { return 0x80; },
+        // PPUSTATUS Register
+        _status: 0,
+        set flag_v(v) { if(v) this._status |= 0x80; else this._status &= ~0x80; },
+        set flag_s(v) { if(v) this._status |= 0x40; else this._status &= ~0x40; },
+        set flag_o(v) { if(v) this._status |= 0x20; else this._status &= ~0x20; },
+        set write_latch(v) { this._status = (this._status & 0xE) | (v & 0x1F); },
+        get ppustatus() {
+            let v = this._status;
+            this._status &= 0x7F;
+            this._ppuaddr_hi = true;
+            // TODO: Clear PPUSCROLL Latch
+            return v;
+        },
 
         // PPUADDR Register
         _ppuaddr: 0,
@@ -51,35 +83,92 @@ function resetPPU() {
             ppuWrite(this._ppuaddr, v);
             this._ppuaddr += this._addr_inc;
         },
-    }
+    };
+
+    nextfuncPPU = zeroCycle;
 }
 
 // PPU Operation Functions
 function tickPPU() {
-
+    for(let i = 0; i < 3; i++) {
+        //console.log(nextfuncPPU.name);
+        nextfuncPPU();
+    }
 }
 
-const monoPalette = [
-    [0, 0, 0],
-    [100, 100, 100],
-    [200, 200, 200],
-    [255, 255, 255],
-]
+function zeroCycle() {
+    // (Pre-)rendering scanlines
+    if(_ppu.y < 240)
+        return nextfuncPPU = renderCycle;
 
-function _renderNametable() {
-    for(let x = 0; x < 32*8; x++) {
-        for(let y = 0; y < 30*8; y++) {
-            let tile = ppuRead(_ppu._nametable + 32*Math.floor(y/8) + Math.floor(x/8));
-            let pat_lo = ppuRead(_ppu._bg_pat_table + 16*tile + (y % 8));
-            let pat_hi = ppuRead(_ppu._bg_pat_table + 16*tile + (y % 8) + 8);
-            let px_lo = (pat_lo >> (7 - (x % 8))) & 1;
-            let px_hi = (pat_hi >> (7 - (x % 8))) & 1;
-            let px = (px_hi << 1) + px_lo;
-            let pal = monoPalette[px];
-            drawPixel(pal[0], pal[1], pal[2], x, y);
+    // Post-render line + VBlank
+    if(_ppu.y === 241 && _ppu.lineCycle === 1)
+        _ppu.flag_v = 1;
+    if(_ppu.lineCycle++ === 340) {
+        _ppu.lineCycle = 0;
+        if(++_ppu.y === 261) {
+            _ppu.y = -1;
+            _ppu.fetchY = 0;
+            _ppu.shift_pattern = [];
         }
     }
-    renderFrame();
+}
+
+function renderCycle() {
+    // Increment Cycle Count & Clear Flags if necessary
+    if(++_ppu.lineCycle === 1 && _ppu.y === -1) {
+        _ppu.flag_v = false;
+        _ppu.flag_s = false;
+        _ppu.flag_o = false;
+    }
+
+    // Pattern Fetcher
+    switch(_ppu.fetchState++) {
+        case 0: // First NT byte cycle
+        case 2: // First AT byte cycle
+        case 4: // First Low BG cycle
+        case 6: // First High BG cycle
+            break;
+        case 1: // Second NT byte cycle
+            _ppu.nt = ppuRead(_ppu._nametable + 32*Math.floor(_ppu.fetchY/8) + _ppu.fetchX);
+            break;
+        case 3: // Second AT byte cycle
+            _ppu.at = ppuRead(_ppu._nametable + 0x3C0 + 8*Math.floor(_ppu.fetchY/32) + Math.floor(_ppu.fetchX/8));
+            break;
+        case 5: // Second Low BG cycle
+            _ppu.bgl = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8));
+            break;
+        case 7: // Second High BG cycle
+            _ppu.bgh = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8) + 8);
+            if(_ppu.fetchX <= 32)
+                _ppu.fetchX++;
+
+            // Decode & Push pixel data
+            for(let i = 0x80, j = 7; i > 0; i >>= 1, j--)
+                _ppu.shift_pattern.push(((_ppu.bgl & i) >> j) | ((_ppu.bgh & i) >> (j-1)));
+
+            _ppu.fetchState = 0;
+            break;
+    }
+
+    // Rendering
+    let px = _ppu.shift_pattern.length > 0 ? _ppu.shift_pattern.shift() : null;
+    if(_ppu.y !== -1 && px !== null) {
+        let rgb = monoPalette[px];
+        drawPixel(rgb[0], rgb[1], rgb[2], _ppu.x++, _ppu.y);
+    }
+
+    // Checking for end of scanline
+    if(_ppu.lineCycle === 340) {
+        if(_ppu.y !== -1)
+            _ppu.fetchY++;
+        _ppu.fetchX = 0;
+        _ppu.x = 0;
+        _ppu.y++;
+        _ppu.lineCycle = 0;
+        _ppu.fetchState = 0;
+        nextfuncPPU = zeroCycle;
+    }
 }
 
 // Rendering Functions

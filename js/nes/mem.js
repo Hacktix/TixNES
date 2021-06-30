@@ -39,7 +39,6 @@ function readByte(addr) {
 
     if(addr < 0x4000) { // TODO: PPU Registers
         let val = _ppu[ppureg[addr & 7]];
-        // console.log(`> Read $${val.toString(16).padStart(2,0)} from ${ppureg[addr & 7].toUpperCase()}`);
         return val;
     }
 
@@ -67,7 +66,7 @@ function writeByte(addr, val) {
     }
 
     if(addr < 0x4000) { // TODO: PPU Registers
-        // console.log(`> Wrote $${val.toString(16).padStart(2,0)} to ${ppureg[addr & 7].toUpperCase()}`);
+        _ppu.write_latch = val;
         _ppu[ppureg[addr & 7]] = val;
     }
 
