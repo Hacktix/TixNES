@@ -145,7 +145,7 @@ function renderCycle() {
 
             // Decode & Push pixel data
             for(let i = 0x80, j = 7; i > 0; i >>= 1, j--)
-                _ppu.shift_pattern.push(((_ppu.bgl & i) >> j) | ((_ppu.bgh & i) >> (j-1)));
+                _ppu.shift_pattern.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
 
             _ppu.fetchState = 0;
             break;
