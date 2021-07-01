@@ -6,12 +6,13 @@ function resetInputState() {
         _latchedState: 0,
         _latch: false,
 
-        set joypad(v) { this._latch = (v & 1) === 1; },
+        set joypad(v) {
+            this._latch = (v & 1) === 1;
+            this._latchedState = this._state;
+        },
         get joypad() {
-            if(this._latch) {
+            if(this._latch)
                 this._latchedState = this._state;
-                console.log(`Latched Controller State $${this._state.toString(2).padStart(8,0)}`)
-            }
             let v = (this._latchedState & 0x80) >> 7;
             this._latchedState = (this._latchedState << 1) & 0xFF;
             return v;

@@ -42,12 +42,15 @@ function readByte(addr) {
         return val;
     }
 
-    if(addr < 0x4018) // TODO: APU & I/O Registers
+    if(addr < 0x4018) { // TODO: APU & I/O Registers
         switch(addr) {
             case 0x4016: // JOYPAD1
             case 0x4017: // JOYPAD2
                 return _input.joypad;
+            default:
+                return 0;
         }
+    }
 
     if(addr < 0x4020) // TODO: Test Mode Registers
         return 0;
@@ -65,15 +68,12 @@ function writeByte(addr, val) {
         return;
     }
 
-    if(addr < 0x4000) { // TODO: PPU Registers
-        _ppu.write_latch = val;
-        _ppu[ppureg[addr & 7]] = val;
-    }
+    if(addr < 0x4000) // TODO: PPU Registers
+        return _ppu[ppureg[addr & 7]] = _ppu.write_latch = val;
 
     if(addr < 0x4018) { // TODO: APU & I/O Registers
         switch(addr) {
             case 0x4016: // JOYPAD1
-            case 0x4017: // JOYPAD2
                 return _input.joypad = val;
         }
     }
