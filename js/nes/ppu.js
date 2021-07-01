@@ -133,46 +133,55 @@ function renderCycle() {
     }
 
     // Pattern Fetcher
-    switch(_ppu.fetchState++) {
-        case 0: // First NT byte cycle
-        case 2: // First AT byte cycle
-        case 4: // First Low BG cycle
-        case 6: // First High BG cycle
-            break;
-        case 1: // Second NT byte cycle
-            _ppu.nt = ppuRead(_ppu._nametable + 32*Math.floor(_ppu.fetchY/8) + _ppu.fetchX);
-            break;
-        case 3: // Second AT byte cycle
-            _ppu.at = ppuRead(_ppu._nametable + 0x3C0 + 8*Math.floor(_ppu.fetchY/32) + Math.floor(_ppu.fetchX/8));
-            break;
-        case 5: // Second Low BG cycle
-            _ppu.bgl = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8));
-            break;
-        case 7: // Second High BG cycle
-            _ppu.bgh = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8) + 8);
-            if(_ppu.fetchX <= 32)
+    if(_ppu.lineCycle < 257 || _ppu.lineCycle > 320) {
+        switch(_ppu.fetchState++) {
+            case 0: // First NT byte cycle
+            case 2: // First AT byte cycle
+            case 4: // First Low BG cycle
+            case 6: // First High BG cycle
+                break;
+            case 1: // Second NT byte cycle
+                _ppu.nt = ppuRead(_ppu._nametable + 32*Math.floor(_ppu.fetchY/8) + _ppu.fetchX);
+                break;
+            case 3: // Second AT byte cycle
+                _ppu.at = ppuRead(_ppu._nametable + 0x3C0 + 8*Math.floor(_ppu.fetchY/32) + Math.floor(_ppu.fetchX/8));
+                break;
+            case 5: // Second Low BG cycle
+                _ppu.bgl = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8));
+                break;
+            case 7: // Second High BG cycle
+                _ppu.bgh = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8) + 8);
                 _ppu.fetchX++;
-
-            // Decode & Push pixel data
-            for(let i = 0x80, j = 7; i > 0; i >>= 1, j--)
-                _ppu.shift_pattern.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
-
-            _ppu.fetchState = 0;
-            break;
+    
+                // Decode & Push pixel data
+                for(let i = 0x80, j = 7; i > 0; i >>= 1, j--)
+                    _ppu.shift_pattern.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
+    
+                _ppu.fetchState = 0;
+                break;
+        }
     }
 
     // Rendering
-    let px = _ppu.shift_pattern.length > 0 ? _ppu.shift_pattern.shift() : null;
-    if(_ppu.y !== -1 && px !== null) {
-        let rgb = monoPalette[px];
-        drawPixel(rgb[0], rgb[1], rgb[2], _ppu.x++, _ppu.y);
+    if(_ppu.x < 256) {
+        let px = _ppu.shift_pattern.length > 0 ? _ppu.shift_pattern.shift() : null;
+        if(_ppu.y !== -1 && px !== null) {
+            let rgb = monoPalette[px];
+            drawPixel(rgb[0], rgb[1], rgb[2], _ppu.x++, _ppu.y);
+        }
+    }
+
+    // Check for Pre-fetch for next line
+    if(_ppu.lineCycle === 320) {
+        _ppu.fetchState = 0;
+        _ppu.shift_pattern = [];
+        _ppu.fetchX = 0;
+        if(_ppu.y !== -1)
+            _ppu.fetchY++;
     }
 
     // Checking for end of scanline
     if(_ppu.lineCycle === 340) {
-        if(_ppu.y !== -1)
-            _ppu.fetchY++;
-        _ppu.fetchX = 0;
         _ppu.x = 0;
         _ppu.y++;
         _ppu.lineCycle = 0;
