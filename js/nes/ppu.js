@@ -13,6 +13,13 @@ const monoPalette = [
     [255, 255, 255],
 ]
 
+const colorPalette = [
+    [101,101,101],[0,45,105],[19,31,127],[60,19,124],[96,11,98],[115,10,55],[113,15,7],[90,26,0],[52,40,0],[11,52,0],[0,60,0],[0,61,16],[0,56,64],[0,0,0],[0,0,0],[0,0,0],
+    [174,174,174],[15,99,179],[64,81,208],[120,65,204],[167,54,169],[192,52,112],[189,60,48],[159,74,0],[109,92,0],[54,109,0],[7,119,4],[0,121,61],[0,114,125],[0,0,0],[0,0,0],[0,0,0],
+    [255,255,255],[93,179,255],[143,161,255],[200,144,255],[247,133,250],[255,131,192],[255,139,127],[239,154,73],[189,172,44],[133,188,47],[85,199,83],[60,201,140],[62,194,205],[78,78,78],[0,0,0],[0,0,0],
+    [255,255,255],[188,223,255],[209,216,255],[232,209,255],[251,205,253],[255,204,229],[255,207,202],[248,213,180],[228,220,168],[204,227,169],[185,232,184],[174,232,208],[175,229,234],[182,182,182],[0,0,0],[0,0,0],
+];
+
 // Reset Function
 function resetPPU() {
     ppuram = new Array(0x3000).fill(0);
@@ -30,7 +37,8 @@ function resetPPU() {
         at: 0,
         bgl: 0,
         bgh: 0,
-        shift_pattern: [],
+        patternShift: [],
+        paletteShift: [],
         lineCycle: 0,
         fetchState: 0,
 
@@ -119,7 +127,7 @@ function zeroCycle() {
         if(++_ppu.y === 261) {
             _ppu.y = -1;
             _ppu.fetchY = 0;
-            _ppu.shift_pattern = [];
+            _ppu.patternShift = [];
         }
     }
 }
@@ -144,7 +152,7 @@ function renderCycle() {
                 _ppu.nt = ppuRead(_ppu._nametable + 32*Math.floor(_ppu.fetchY/8) + _ppu.fetchX);
                 break;
             case 3: // Second AT byte cycle
-                _ppu.at = ppuRead(_ppu._nametable + 0x3C0 + 8*Math.floor(_ppu.fetchY/32) + Math.floor(_ppu.fetchX/8));
+                _ppu.at = ppuRead(_ppu._nametable + 0x3C0 + 8*Math.floor(_ppu.fetchY/32) + Math.floor(_ppu.fetchX/4));
                 break;
             case 5: // Second Low BG cycle
                 _ppu.bgl = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8));
@@ -154,8 +162,13 @@ function renderCycle() {
                 _ppu.fetchX++;
     
                 // Decode & Push pixel data
-                for(let i = 0x80, j = 7; i > 0; i >>= 1, j--)
-                    _ppu.shift_pattern.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
+                let pal =   ((_ppu.fetchX % 4) < 2) ?
+                                ((_ppu.fetchY % 32) < 16) ? (_ppu.at & 0b11) : ((_ppu.at & 0b110000) >> 4) :
+                                ((_ppu.fetchY % 32) < 16) ? ((_ppu.at & 0b1100) >> 2) : ((_ppu.at & 0b11000000) >> 6);
+                for(let i = 0x80, j = 7; i > 0; i >>= 1, j--) {
+                    _ppu.patternShift.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
+                    _ppu.paletteShift.push(pal);
+                }
     
                 _ppu.fetchState = 0;
                 break;
@@ -164,9 +177,11 @@ function renderCycle() {
 
     // Rendering
     if(_ppu.x < 256) {
-        let px = _ppu.shift_pattern.length > 0 ? _ppu.shift_pattern.shift() : null;
+        let px = _ppu.patternShift.length > 0 ? _ppu.patternShift.shift() : null;
+        let pal = px === null ? null : _ppu.paletteShift.shift();
         if(_ppu.y !== -1 && px !== null) {
-            let rgb = monoPalette[px];
+            let rgb = px === 0 ? (ppuRead(0x3F00) & 0x3F) :
+                                 colorPalette[ppuRead([0x3F01, 0x3F05, 0x3F09, 0x3F0D][pal] + px - 1) & 0x3F];
             drawPixel(rgb[0], rgb[1], rgb[2], _ppu.x++, _ppu.y);
         }
     }
@@ -174,7 +189,8 @@ function renderCycle() {
     // Check for Pre-fetch for next line
     if(_ppu.lineCycle === 320) {
         _ppu.fetchState = 0;
-        _ppu.shift_pattern = [];
+        _ppu.patternShift = [];
+        _ppu.paletteShift = [];
         _ppu.fetchX = 0;
         if(_ppu.y !== -1)
             _ppu.fetchY++;
