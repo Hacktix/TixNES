@@ -65,7 +65,7 @@ function resetPPU() {
         set flag_v(v) { if(v) this._status |= 0x80; else this._status &= ~0x80; },
         set flag_s(v) { if(v) this._status |= 0x40; else this._status &= ~0x40; },
         set flag_o(v) { if(v) this._status |= 0x20; else this._status &= ~0x20; },
-        set write_latch(v) { this._status = (this._status & 0xE) | (v & 0x1F); },
+        set write_latch(v) { this._status = (this._status & 0xE0) | (v & 0x1F); },
         get ppustatus() {
             let v = this._status;
             this._status &= 0x7F;
@@ -84,9 +84,21 @@ function resetPPU() {
                 this._ppuaddr = (this._ppuaddr & 0xFF00) + (v & 0xFF);
             this._ppuaddr_hi = !this._ppuaddr_hi;
         },
-        get ppuaddr() { return this._ppuaddr; },
 
         // PPUDATA Register
+        _dataBuffer: 0,
+        get ppudata() {
+            let v = ppuRead(this._ppuaddr);
+            if(this._ppuaddr < 0x3F00) {
+                let av = this._dataBuffer;
+                this._dataBuffer = v;
+                this._ppuaddr += this._addr_inc;
+                return av;
+            }
+            this._dataBuffer = v;
+            this._ppuaddr += this._addr_inc;
+            return v;
+        },
         set ppudata(v) {
             ppuWrite(this._ppuaddr, v);
             this._ppuaddr += this._addr_inc;
