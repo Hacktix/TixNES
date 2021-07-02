@@ -180,7 +180,7 @@ function renderCycle() {
         let px = _ppu.patternShift.length > 0 ? _ppu.patternShift.shift() : null;
         let pal = px === null ? null : _ppu.paletteShift.shift();
         if(_ppu.y !== -1 && px !== null) {
-            let rgb = px === 0 ? (ppuRead(0x3F00) & 0x3F) :
+            let rgb = px === 0 ? colorPalette[(ppuRead(0x3F00) & 0x3F)] :
                                  colorPalette[ppuRead([0x3F01, 0x3F05, 0x3F09, 0x3F0D][pal] + px - 1) & 0x3F];
             drawPixel(rgb[0], rgb[1], rgb[2], _ppu.x++, _ppu.y);
         }

@@ -92,11 +92,15 @@ function writeByte(addr, val) {
 function _ppuReadDefault(addr) {
     if(addr < 0x3F00)
         return ppuram[addr % 0x3000];
+    if([0x3F10, 0x3F14, 0x3F18, 0x3F1C].includes(addr))
+        addr -= 0x10;
     return paletteram[addr & 0x1F];
 }
 
 function _ppuWriteDefault(addr, val) {
     if(addr < 0x3F00)
         return ppuram[addr % 0x3000] = val;
+    if([0x3F10, 0x3F14, 0x3F18, 0x3F1C].includes(addr))
+        addr -= 0x10;
     return paletteram[addr & 0x1F] = val;
 }
