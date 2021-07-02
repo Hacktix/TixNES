@@ -37,10 +37,8 @@ function readByte(addr) {
     if(addr < 0x2000) // 2KB internal RAM  (+ Mirrors)
         return ram[addr & 0x7FF];
 
-    if(addr < 0x4000) { // TODO: PPU Registers
-        let val = _ppu[ppureg[addr & 7]];
-        return val;
-    }
+    if(addr < 0x4000) // PPU Registers
+        return _ppu[ppureg[addr & 7]];
 
     if(addr < 0x4018) { // TODO: APU & I/O Registers
         switch(addr) {
@@ -68,13 +66,15 @@ function writeByte(addr, val) {
         return;
     }
 
-    if(addr < 0x4000) // TODO: PPU Registers
+    if(addr < 0x4000) // PPU Registers
         return _ppu[ppureg[addr & 7]] = _ppu.write_latch = val;
 
     if(addr < 0x4018) { // TODO: APU & I/O Registers
         switch(addr) {
             case 0x4016: // JOYPAD1
                 return _input.joypad = val;
+            default:
+                return;
         }
     }
 
