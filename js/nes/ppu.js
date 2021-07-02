@@ -159,7 +159,6 @@ function renderCycle() {
                 break;
             case 7: // Second High BG cycle
                 _ppu.bgh = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8) + 8);
-                _ppu.fetchX++;
     
                 // Decode & Push pixel data
                 let pal =   ((_ppu.fetchX % 4) < 2) ?
@@ -169,6 +168,7 @@ function renderCycle() {
                     _ppu.patternShift.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
                     _ppu.paletteShift.push(pal);
                 }
+                _ppu.fetchX++;
     
                 _ppu.fetchState = 0;
                 break;
