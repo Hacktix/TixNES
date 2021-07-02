@@ -1,5 +1,4 @@
 // Include instruction files
-include('nes/instr/memaccess.js');
 include('nes/instr/jump.js');
 include('nes/instr/branch.js');
 include('nes/instr/ldst.js');
