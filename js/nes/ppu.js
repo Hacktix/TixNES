@@ -41,6 +41,7 @@ function resetPPU() {
         paletteShift: [],
         lineCycle: 0,
         fetchState: 0,
+        frame: 0,
 
         // PPUCTRL Register
         _nametable: 0x2000,
@@ -127,8 +128,11 @@ function tickPPU() {
 
 function zeroCycle() {
     // (Pre-)rendering scanlines
-    if(_ppu.y < 240)
+    if(_ppu.y < 240) {
+        if(_ppu.y === 0 && (_ppu.frame++ % 2) === 1)
+            renderCycle();
         return nextfuncPPU = renderCycle;
+    }
 
     // Post-render line + VBlank
     if(_ppu.y === 241 && _ppu.lineCycle === 1) {
