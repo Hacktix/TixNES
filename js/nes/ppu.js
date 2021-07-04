@@ -76,16 +76,27 @@ function resetPPU() {
 
         // PPUSTATUS Register
         _status: 0,
+        _regLatch: 0,
         set flag_v(v) { if(v) this._status |= 0x80; else this._status &= ~0x80; },
         set flag_s(v) { if(v) this._status |= 0x40; else this._status &= ~0x40; },
         set flag_o(v) { if(v) this._status |= 0x20; else this._status &= ~0x20; },
-        set write_latch(v) { this._status = (this._status & 0xE0) | (v & 0x1F); },
+        set write_latch(v) { this._regLatch = (v & 0x1F); },
         get ppustatus() {
-            let v = this._status;
+            let v = this._status | this._regLatch;
             this._status &= 0x7F;
             this._ppuaddr_hi = true;
-            // TODO: Clear PPUSCROLL Latch
             return v;
+        },
+
+        // PPUSCROLL
+        _scroll_x: 0,
+        _scroll_y: 0,
+        set ppuscroll(v) {
+            if(this._ppuaddr_hi)
+                this._scroll_x = v;
+            else
+                this._scroll_y = v;
+            this._ppuaddr_hi = !this._ppuaddr_hi;
         },
 
         // PPUADDR Register
