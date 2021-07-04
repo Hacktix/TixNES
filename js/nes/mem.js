@@ -21,7 +21,10 @@ function resetMemoryState(rom) {
     ram = new Array(0x800).fill(0);
 
     // Mapper detection & cartridge space function mapping
-    mappers[rom.header.mapper].init(rom);
+    if(mappers[rom.header.mapper])
+        mappers[rom.header.mapper].init(rom);
+    else
+        throw `ROM uses unimplemented mapper $${rom.header.mapper.toString(16).padStart(2,0)}`;
 }
 
 // --------------------------------------------------------------------
