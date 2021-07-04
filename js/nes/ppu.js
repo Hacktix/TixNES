@@ -61,6 +61,19 @@ function resetPPU() {
             this._en_nmi = (v & 0b10000000) !== 0;
         },
 
+        // PPUMASK Register
+        _mask: 0,
+        set ppumask(v) { this._mask = v; },
+        get ppumask() { return this._mask; },
+        get greyscale() { return (this._mask & 0b1) !== 0; },
+        get en_bg_left() { return (this._mask & 0b10) !== 0; },
+        get en_spr_left() { return (this._mask & 0b100) !== 0; },
+        get en_bg() { return (this._mask & 0b1000) !== 0; },
+        get en_spr() { return (this._mask & 0b10000) !== 0; },
+        get emp_red() { return (this._mask & 0b100000) !== 0; },
+        get emp_green() { return (this._mask & 0b1000000) !== 0; },
+        get emp_blue() { return (this._mask & 0b10000000) !== 0; },
+
         // PPUSTATUS Register
         _status: 0,
         set flag_v(v) { if(v) this._status |= 0x80; else this._status &= ~0x80; },
@@ -177,12 +190,14 @@ function renderCycle() {
                 _ppu.bgh = ppuRead(_ppu._bg_pat_table + 16*_ppu.nt + (_ppu.fetchY % 8) + 8);
     
                 // Decode & Push pixel data
-                let pal =   ((_ppu.fetchX % 4) < 2) ?
-                                ((_ppu.fetchY % 32) < 16) ? (_ppu.at & 0b11) : ((_ppu.at & 0b110000) >> 4) :
-                                ((_ppu.fetchY % 32) < 16) ? ((_ppu.at & 0b1100) >> 2) : ((_ppu.at & 0b11000000) >> 6);
-                for(let i = 0x80, j = 7; i > 0; i >>= 1, j--) {
-                    _ppu.patternShift.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
-                    _ppu.paletteShift.push(pal);
+                if(_ppu.en_bg) {
+                    let pal =   ((_ppu.fetchX % 4) < 2) ?
+                                    ((_ppu.fetchY % 32) < 16) ? (_ppu.at & 0b11) : ((_ppu.at & 0b110000) >> 4) :
+                                    ((_ppu.fetchY % 32) < 16) ? ((_ppu.at & 0b1100) >> 2) : ((_ppu.at & 0b11000000) >> 6);
+                    for(let i = 0x80, j = 7; i > 0; i >>= 1, j--) {
+                        _ppu.patternShift.push(((_ppu.bgl & i) >> j) | (j > 0 ? ((_ppu.bgh & i) >> (j-1)) : ((_ppu.bgh & i) << 1)));
+                        _ppu.paletteShift.push(pal);
+                    }
                 }
                 _ppu.fetchX++;
     
